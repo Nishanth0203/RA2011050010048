@@ -1,4 +1,4 @@
-//importing the required modules 
+//importing the required modules
 const express = require('express');
 const axios = require('axios');
 
@@ -6,36 +6,33 @@ const axios = require('axios');
 const app = express();
 const PORT = 8008;
 
-//Defined the route
+//Describing the route
 app.get('/numbers', async (req, res) => {
-  // Get the list of URLs from query parameters
   const urls = req.query.url || [];
   const timeout = 500;
   const mergedNumbers = [];
 
   try {
-    //looping on each url to get the numbers
     const requests = urls.map(async (url) => {
       try {
         const response = await axios.get(url, { timeout });
-        const numbers = response.data.numbers;
 
         // Checking the validity
-        if (Array.isArray(numbers)) {
-          mergedNumbers.push(...numbers);
+        if (Array.isArray(response.data.numbers)) {
+          mergedNumbers.push(...response.data.numbers);
         } else {
-          console.error(`Invalid numbers from array ${url}`);
+          console.error(`Invalid numbers array from ${url}`);
         }
       } catch (error) {
-        console.error(`Error fetching  ${url}: ${error.message}`);
+        console.error(`Error fetching from ${url}: ${error.message}`);
       }
     });
 
-   
     await Promise.all(requests);
 
 
     const uniqueSortedNumbers = [...new Set(mergedNumbers)].sort((a, b) => a - b);
+
 
     res.json({ numbers: uniqueSortedNumbers });
   } catch (error) {
@@ -44,7 +41,8 @@ app.get('/numbers', async (req, res) => {
   }
 });
 
-// Starting the server -- it is using the port 8008 as mentioned in question
+//using port 8008
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
